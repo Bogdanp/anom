@@ -25,10 +25,6 @@ type Post struct {
 	Title string
 	Content string
 }
-
-func (p *Post) GetMeta() *Meta {
-	return &p.Meta
-}
 ```
 
 Then use them:

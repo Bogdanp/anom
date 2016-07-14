@@ -14,8 +14,4 @@
 //   	Title string
 //   	Content string
 //   }
-//
-//   func (p *Post) GetMeta() *Meta {
-//   	return &p.Meta
-//   }
 package anom

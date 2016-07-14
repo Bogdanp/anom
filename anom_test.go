@@ -22,17 +22,9 @@ type User struct {
 	Username string
 }
 
-func (u *User) GetMeta() *Meta {
-	return &u.Meta
-}
-
 type Post struct {
 	Meta
 	Content string
-}
-
-func (p *Post) GetMeta() *Meta {
-	return &p.Meta
 }
 
 func TestGet(t *testing.T) {
@@ -103,7 +95,7 @@ func TestDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if u.Meta.State != EntityStateDeleted {
+	if u.Meta.State != StateDeleted {
 		t.Fatal("state was not updated")
 	}
 
@@ -116,7 +108,7 @@ func TestDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if u.State != u2.State || u2.State != EntityStateDeleted {
+	if u.State != u2.State || u2.State != StateDeleted {
 		t.Fatalf("user wasn't deleted: %q", u2)
 	}
 }
@@ -137,7 +129,7 @@ func TestQuery(t *testing.T) {
 	}
 
 	for _, u := range us {
-		if u.State != EntityStateActive {
+		if u.State != StateActive {
 			t.Errorf("entity is not active: %q", u)
 		}
 	}

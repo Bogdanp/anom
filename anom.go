@@ -20,33 +20,25 @@ var (
 )
 
 const (
-	// EntityStateActive is the state of Model instances that have been persisted.
-	EntityStateActive = "active"
-	// EntityStateDeleted is the state of Model instances that have been deleted.
-	EntityStateDeleted = "deleted"
+	// StateActive is the state of Model instances that have been persisted.
+	StateActive = "active"
+	// StateDeleted is the state of Model instances that have been deleted.
+	StateDeleted = "deleted"
 )
 
-// Model is the interface that all Model structs must implement.  It
-// provides anom with a way to access the Meta struct inside Model
-// structs.
+// Model is the interface that all Model structs automatically
+// implement when they embed Meta.
 type Model interface {
-	GetMeta() *Meta
+	meta() *Meta
 }
 
 // Meta is the struct that all Model structs must embed.  It extends
 // entities with metadata about when they were created, last updated
 // and deleted as well as their current state and their Key.
 //
-// In addition to embedding Meta, all Models must declare an accessor
-// for it.
-//
 //   type User struct {
 //       Meta
 //       Username string
-//   }
-//
-//   func (u *User) GetMeta() *Meta {
-//       return &u.Meta
 //   }
 type Meta struct {
 	Key       *datastore.Key `json:"-" datastore:"-"`
@@ -55,6 +47,10 @@ type Meta struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt time.Time      `json:"deletedAt"`
+}
+
+func (m *Meta) meta() *Meta {
+	return m
 }
 
 // Option is the type of functional Model options.
@@ -68,7 +64,7 @@ func getKind(m Model) string {
 // WithKey is an Option for assigning a datastore Key to a Model's Meta.
 func WithKey(k *datastore.Key) Option {
 	return func(m Model) {
-		meta := m.GetMeta()
+		meta := m.meta()
 		meta.Key = k
 	}
 }
@@ -80,7 +76,7 @@ func WithKey(k *datastore.Key) Option {
 //   Put(ctx, p, WithParent(u.Key))
 func WithParent(k *datastore.Key) Option {
 	return func(m Model) {
-		meta := m.GetMeta()
+		meta := m.meta()
 		meta.Parent = k
 	}
 }
@@ -89,7 +85,7 @@ func WithParent(k *datastore.Key) Option {
 // given string id to a Model's Meta.
 func WithStringID(ctx context.Context, id string) Option {
 	return func(m Model) {
-		meta := m.GetMeta()
+		meta := m.meta()
 		meta.Key = datastore.NewKey(ctx, getKind(m), id, 0, nil)
 	}
 }
@@ -98,7 +94,7 @@ func WithStringID(ctx context.Context, id string) Option {
 // int64 id to a Model's Meta.
 func WithIntID(ctx context.Context, id int64) Option {
 	return func(m Model) {
-		meta := m.GetMeta()
+		meta := m.meta()
 		meta.Key = datastore.NewKey(ctx, getKind(m), "", id, nil)
 	}
 }
@@ -108,12 +104,12 @@ func WithIntID(ctx context.Context, id int64) Option {
 // Keys and Parents so you will have to do that manually.
 func Query(kind string) *datastore.Query {
 	return datastore.NewQuery(kind).
-		Filter("State=", EntityStateActive)
+		Filter("State=", StateActive)
 }
 
 // Get retrieves a Model from datastore by its id.
 func Get(ctx context.Context, m Model, options ...Option) error {
-	meta := m.GetMeta()
+	meta := m.meta()
 	for _, option := range options {
 		option(m)
 	}
@@ -127,7 +123,7 @@ func Get(ctx context.Context, m Model, options ...Option) error {
 
 // Put stores a Model to datastore.
 func Put(ctx context.Context, m Model, options ...Option) error {
-	meta := m.GetMeta()
+	meta := m.meta()
 	for _, option := range options {
 		option(m)
 	}
@@ -138,7 +134,7 @@ func Put(ctx context.Context, m Model, options ...Option) error {
 	}
 
 	if meta.State == "" {
-		meta.State = EntityStateActive
+		meta.State = StateActive
 	}
 
 	meta.UpdatedAt = time.Now()
@@ -157,12 +153,12 @@ func Put(ctx context.Context, m Model, options ...Option) error {
 
 // Delete soft deletes a Model from datastore.
 func Delete(ctx context.Context, m Model) error {
-	meta := m.GetMeta()
+	meta := m.meta()
 	if meta.Key == nil {
 		return ErrMissingKey
 	}
 
-	meta.State = EntityStateDeleted
+	meta.State = StateDeleted
 	meta.DeletedAt = time.Now()
 	return Put(ctx, m)
 }
