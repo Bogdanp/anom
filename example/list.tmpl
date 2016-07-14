@@ -1,0 +1,18 @@
+<html>
+  <body>
+    <form action="" method="post">
+      <label>Title <input name="title" /></label><br/>
+      <label>Content <textarea name="content"></textarea></label>
+      <input type="submit" />
+    </form>
+
+    <ul>
+      {{ range . }}
+      <li>
+        <a href="/view/{{.Key.IntID}}">{{ .Title }}</a>
+        <a href="/delete/{{.Key.IntID}}">Delete</a>
+      </li>
+      {{ end }}
+    </ul>
+  </body>
+</html>
