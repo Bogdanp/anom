@@ -11,7 +11,7 @@
 //   type Post struct {
 //   	anom.Meta
 //
-//   	Title string
+//   	Title   string
 //   	Content string
 //   }
 package anom

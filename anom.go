@@ -37,7 +37,8 @@ type Model interface {
 // and deleted as well as their current state and their Key.
 //
 //   type User struct {
-//       Meta
+//       anom.Meta
+//
 //       Username string
 //   }
 type Meta struct {

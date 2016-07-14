@@ -38,7 +38,6 @@ import (
 	"github.com/Bogdanp/anom"
 
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/datastore"
 )
 
 func createPostHandler(rw http.ResponseWriter, req *http.Request) {
