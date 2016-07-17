@@ -5,8 +5,8 @@
 
 `go get github.com/Bogdanp/anom`
 
-Package anom is a simple "object mapper" for appengine datastore
-and that provides some convenience functions for dealing with
-datastore entities.
+Package anom is a simple "object mapper" for appengine datastore that
+provides some convenience functions for dealing with datastore
+entities.
 
 Check out the `example` directory for usage examples.
